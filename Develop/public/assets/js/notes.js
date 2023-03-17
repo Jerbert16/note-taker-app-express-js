@@ -14,19 +14,19 @@ app.use(express.static("public"));
 
 // GET Route for homepage
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "/Develop/public/assets/js/index.html"))
+  res.sendFile(path.join(__dirname, "./public/assets/index.html"))
 });
 
 app.get("/notes", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/assets/notes.html"))
+  res.sendFile(path.join(__dirname, "./public/assets/notes.html"))
 });
 
 app.get("/api/notes", (req, res) => {
-  readFromFile("./db/db.json").then((noteData) => res.json(noteData))});
+  res.json(noteData)});
+
 app.post("/api/notes", (req, res) => {
-  const saveNote = req.body;
-  writeToFile("/Develop/db/db.json", newNote);
-  res.json(`${req.method} recieved`);
+  const saveNote = createNewNote(req.body, allNotes);
+  res.json(newNote);
 });
 
 app.listen(PORT, () => {
