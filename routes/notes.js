@@ -1,35 +1,25 @@
-const express = require("express");
-const { write } = require("fs");
+// dependencies
+const router = require("express").Router();
 const path = require("path");
-const allNotes = require("../db/db.json");
-const PORT = process.env.port || 3001;
+const fs = require("fs");
+const { v4: uuid4 } = require("uuid");
 
-const app = express();
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// app.use("/api", api);
-
-app.use(express.static("public"));
-
-// GET Route for homepage
-app.get("/", (req, res) => {
-res.sendFile(path.join(__dirname, "../public/index.html"));
+// get notes.. might have an issue here... causing issues with the GET in index.js
+router.get("/", (req, res) => {
+  const existingNotes = JSON.parse(fs.readFileSync(__dirname, "db", "db.json"));
+  res.json(existingNotes);
 });
 
-app.get("/notes", (req, res) => {
-res.sendFile(path.join(__dirname, "../public/notes.html"));
+// save new notes
+router.post("/", (req, res) => {
+  const { title, text } = req.body;
+  const newNote = { title, text, id: uuid4() };
+  const existingNotes = JSON.parse(fs.readFileSync("./db/db.json"));
+
+  existingNotes.push(newNote);
+
+  fs.writeFileSync("./db/db.json", JSON.stringify(existingNotes));
+  res.json(newNote);
 });
 
-app.get("/api/notes", (req, res) => {
-  res.json(allNotes);
-});
-
-app.post("/api/notes", (req, res) => {
-  const saveNote = createNewNote(req.body, allNotes);
-  res.json(saveNote);
-});
-
-app.listen(PORT, () => {
-  console.log(`App listening at http://localhost:${PORT} 🚀`);
-});
+module.exports = router;
