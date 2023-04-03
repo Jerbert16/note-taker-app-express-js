@@ -4,18 +4,26 @@ if (window.location.pathname === "/notes") {
   const noteText = document.querySelector(".note-textarea");
   const addNoteBtn = document.querySelector(".new-note");
   const saveBtn = document.querySelector(".save-note");
+  const noteCard = document.querySelector(".list-group");
   saveBtn.style.display = "inline";
 
-  const getNote = () => {
-    fetch("/api/notes", {
-      method: "GET",
+  // can view objects with insomnia, so route works
+  const getNote = fetch("/api/notes", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const deleteNote = (id) =>
+    fetch(`/api/notes/${id}`, {
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
     });
-  };
 
-  //can't seem to access the db.json with getNote().then()..this is what's holding me back but it's late and I've spent hours researching/trying
+  // saveNote actually adds to the db wooooo!
 
   const saveNote = (note) =>
     fetch("/api/notes", {
@@ -26,27 +34,35 @@ if (window.location.pathname === "/notes") {
       body: JSON.stringify(note),
     });
 
-  // saveNote actually adds to the db wooooo!
-
-  const deleteNote = (id) =>
-    fetch(`/api/notes/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
   function addNotesToDb() {
     const newNote = {
       title: noteTitle.value,
       text: noteText.value,
     };
     saveNote(newNote);
+  };
+
+  function renderNotes() {
+    getNote
+      .then((resp) => resp.json())
+      .then((data) => {
+        let newNote = document.createElement("li");
+          console.log(data);
+          data.forEach(element => noteCard.appendChild(newNote).textContent = data[data.length -1].title);
+        }
+      );
+  };
+
+  function addNote() {
+    addNotesToDb();
+    //renderNotes();
   }
+
+  renderNotes();
 
   saveBtn.addEventListener("click", addNotesToDb);
   addNoteBtn.addEventListener(
     "click",
-    console.log("going to write addNotes function")
+   addNote
   );
-}
+};

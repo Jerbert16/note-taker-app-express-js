@@ -3,11 +3,18 @@ const router = require("express").Router();
 const path = require("path");
 const fs = require("fs");
 const { v4: uuid4 } = require("uuid");
+const util = require("util");
 
-// get notes.. might have an issue here... causing issues with the GET in index.js
+const readFileAsync = util.promisify(fs.readFile);
+
+// get notes 
 router.get("/", (req, res) => {
-  const existingNotes = JSON.parse(fs.readFileSync(__dirname, "db", "db.json"));
-  res.json(existingNotes);
+  // const existingNotes = JSON.parse(fs.readFileSync(__dirname, "db", "db.json"));
+  // res.json(existingNotes);
+  readFileAsync("./db/db.json", "utf8").then(function(data){
+    notes = [].concat(JSON.parse(data))
+    res.json(notes)
+  })
 });
 
 // save new notes
