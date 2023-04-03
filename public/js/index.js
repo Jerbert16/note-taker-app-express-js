@@ -46,17 +46,22 @@ if (window.location.pathname === "/notes") {
     getNote
       .then((resp) => resp.json())
       .then((data) => {
-        let newNote = document.createElement("li");
+        let newNoteCard = document.createElement("li");
           console.log(data);
-          data.forEach(element => noteCard.appendChild(newNote).textContent = data[data.length -1].title);
+          data.forEach(element => noteCard.appendChild(newNoteCard).textContent = data[data.length -1].title);
         }
       );
   };
 
   function addNote() {
     addNotesToDb();
-    //renderNotes();
-  }
+    const freshNote = document.createElement("li");
+    const noteDetails = {
+      title: noteTitle.value,
+      text: noteText.value,
+    };
+    noteCard.appendChild(freshNote).textContent = JSON.stringify(noteDetails.title);
+  };
 
   renderNotes();
 
